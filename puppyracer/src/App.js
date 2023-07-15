@@ -59,8 +59,8 @@ function App() {
           className="Corgi"
           style={{
             transition: "left 2s, top 2s",
-            left: `${nodePositions[currentTask].left}%`,
-            top: `${nodePositions[currentTask].top}%`,
+            left: `${nodePositions[currentTask].left - 5}%`,
+            top: `${nodePositions[currentTask].top - 20}%`,
           }}
           onTransitionEnd={handleTransitionEnd}
           alt="corgi"
@@ -71,8 +71,8 @@ function App() {
           <div
             className="ChatBubble"
             style={{
-              left: `calc(${nodePositions[currentTask].left}% + 15px)`, // Subtract half of the chat bubble's width
-              top: `${nodePositions[currentTask].top - 20}%`, // Increase the subtraction to move it upwards
+              left: `calc(${nodePositions[currentTask].left - 5}% + 15px)`, // Subtract half of the chat bubble's width
+              top: `${nodePositions[currentTask].top - 40}%`, // Increase the subtraction to move it upwards
             }}
           >
             {tasks[currentTask]}
