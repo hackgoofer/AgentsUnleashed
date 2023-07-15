@@ -5,25 +5,25 @@ import corgiSit from "./corgi_sit.gif";
 
 function App() {
   const [position, setPosition] = useState(0);
-  const [isMoving, setIsMoving] = useState(false);
+  const [corgiGif, setCorgiGif] = useState(corgiSit);
 
   const handleButtonClick = () => {
-    setIsMoving(true);
-    setPosition((oldPosition) => oldPosition + 1); // Update position
+    setCorgiGif(corgiRun);
+    setPosition((oldPosition) => oldPosition + 100); // Update position
+  };
 
-    // After a delay, stop moving
-    setTimeout(() => {
-      setIsMoving(false);
-    }, 500); // Adjust this delay as necessary
+  const handleTransitionEnd = () => {
+    setCorgiGif(corgiSit);
   };
 
   return (
     <div className="App">
       <header className="App-header">
         <img
-          src={isMoving ? corgiRun : corgiSit}
+          src={corgiGif}
           className="Corgi"
-          style={{ left: `${position * 50}px` }} // Adjust as necessary
+          style={{ transition: "left 2s", left: `${position}px` }}
+          onTransitionEnd={handleTransitionEnd}
           alt="corgi"
         />
         <button onClick={handleButtonClick}>Move Corgi</button>

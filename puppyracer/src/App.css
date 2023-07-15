@@ -8,5 +8,4 @@
   bottom: 0;
   width: 100px; /* You can adjust this as needed */
   height: auto; /* Maintains aspect ratio */
-  transition: left 0.5s ease-in-out; /* Add this line */
 }
