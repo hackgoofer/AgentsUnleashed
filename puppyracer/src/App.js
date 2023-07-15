@@ -50,7 +50,7 @@ function App() {
           <div
             key={index}
             className="TimelineNode"
-            style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
+            style={{ left: `${pos.left}%`, top: `${pos.top - 2}%` }}
           />
         ))}
         <img
