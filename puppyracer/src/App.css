@@ -24,14 +24,6 @@ body {
   width: 100px; /* You can adjust this as needed */
   height: auto; /* Maintains aspect ratio */
 }
-.Timeline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-top: 3px dashed black; /* Adjust as necessary */
-  z-index: 1; /* Add this line */
-}
 
 .Corgi {
   position: absolute;
@@ -87,18 +79,28 @@ body {
 }
 
 .Timeline {
+  display: flex;
   position: absolute;
-  bottom: 50px; /* Adjust to align with nodes */
-  left: 0;
-  right: 0;
-  border-top: 2px dashed black; /* Create dashed line */
+  bottom: 50px;
+  width: 100%;
+}
+
+.TimelineSegment {
+  display: flex;
+  flex: 1;
+  align-items: center;
 }
 
 .TimelineNode {
-  position: absolute;
-  bottom: 0;
   height: 10px;
   width: 10px;
   background-color: black;
   border-radius: 50%;
+}
+
+.TimelineLine {
+  flex-grow: 1;
+  height: 1px;
+  background-color: black;
+  border-top: 2px dashed black;
 }
