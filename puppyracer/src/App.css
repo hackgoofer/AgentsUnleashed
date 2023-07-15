@@ -85,3 +85,20 @@ body {
   border-right: 11px solid transparent;
   border-top: 11px solid black;
 }
+
+.Timeline {
+  position: absolute;
+  bottom: 50px; /* Adjust to align with nodes */
+  left: 0;
+  right: 0;
+  border-top: 2px dashed black; /* Create dashed line */
+}
+
+.TimelineNode {
+  position: absolute;
+  bottom: 0;
+  height: 10px;
+  width: 10px;
+  background-color: black;
+  border-radius: 50%;
+}
