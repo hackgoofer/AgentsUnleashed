@@ -71,8 +71,8 @@ function App() {
           <div
             className="ChatBubble"
             style={{
-              left: `calc(${nodePositions[currentTask].left}% - 50px)`, // Subtract half of the chat bubble's width
-              top: `${nodePositions[currentTask].top - 35}%`, // Increase the subtraction to move it upwards
+              left: `calc(${nodePositions[currentTask].left}% + 15px)`, // Subtract half of the chat bubble's width
+              top: `${nodePositions[currentTask].top - 20}%`, // Increase the subtraction to move it upwards
             }}
           >
             {tasks[currentTask]}

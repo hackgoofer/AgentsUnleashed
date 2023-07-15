@@ -23,10 +23,22 @@ body {
   width: 100px; /* You can adjust this as needed */
   height: auto; /* Maintains aspect ratio */
   z-index: 2; /* Add this line */
-  transform: translate(-50%, -50%); /* Added this line */
+  transform: tran slate(-50%, -50%); /* Added this line */
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ChatBubble {
+  animation: fadeInUp 0.5s ease-out;
   position: absolute;
   bottom: 120px; /* Adjust as needed */
   left: 0;
