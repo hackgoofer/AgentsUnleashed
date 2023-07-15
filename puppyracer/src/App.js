@@ -19,7 +19,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="Timeline" /> {/* Add this line */}
+        {corgiGif === corgiSit && (
+          <div className="ChatBubble" style={{ left: `${position}px` }}>
+            Hello!
+          </div>
+        )}
+        <div className="Timeline" />
         <img
           src={corgiGif}
           className="Corgi"
