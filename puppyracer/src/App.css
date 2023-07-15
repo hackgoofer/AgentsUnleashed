@@ -20,17 +20,10 @@ body {
 
 .Corgi {
   position: absolute;
-  bottom: 0;
-  width: 100px; /* You can adjust this as needed */
-  height: auto; /* Maintains aspect ratio */
-}
-
-.Corgi {
-  position: absolute;
-  bottom: 0;
   width: 100px; /* You can adjust this as needed */
   height: auto; /* Maintains aspect ratio */
   z-index: 2; /* Add this line */
+  transform: translate(-50%, -50%); /* Added this line */
 }
 
 .ChatBubble {
