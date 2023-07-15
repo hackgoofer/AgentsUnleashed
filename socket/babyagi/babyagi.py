@@ -546,11 +546,11 @@ if not JOIN_EXISTING_OBJECTIVE:
     tasks_storage.append(initial_task)
 
 
-def babyagi_function(socket, objective):
+def babyagi_function(socket_name, objective):
     loop = True
     completed_task = []
-    print(socket)
-
+    print(socket_name)
+    # socket_name.emit('message', 'hi') 
     while loop:
         # As long as there are tasks in the storage...
         if not tasks_storage.is_empty():
@@ -564,7 +564,9 @@ def babyagi_function(socket, objective):
             task = tasks_storage.popleft()
             print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
             print(str(task["task_name"]))
-            socket.emit('message', 'hi')
+            socket_name.emit('message', 'hi')
+            socket_name.sleep(0)  # Flush the emit call
+
             # socket.emit('message', {
             #     "current_task": str(task["task_name"]),
             #     "state": "in_progress",
@@ -593,13 +595,14 @@ def babyagi_function(socket, objective):
 
             results_storage.add(task, result, result_id)
             completed_task.append(task["task_name"])
-            socket.emit('message', {
+            socket_name.emit('message', {
                 "current_task": str(task["task_name"]),
                 "state": "done",
                 "result": result,
                 "tasks_done": completed_task,
                 "tasks_todo": task_list
             })
+            socket_name.sleep(0)  # Flush the emit call
 
             # Step 3: Create new tasks and re-prioritize task list
             # only the main instance in cooperative mode does that
@@ -623,7 +626,7 @@ def babyagi_function(socket, objective):
                     tasks_storage.replace(prioritized_tasks)
 
             new_task_list = tasks_storage.get_task_names()
-            socket.emit('message', {
+            socket_name.emit('message', {
                 "state": "new_tasks_added_reprioritized",
                 "tasks_done": completed_task,
                 "tasks_todo": new_task_list
