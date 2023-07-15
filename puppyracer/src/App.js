@@ -36,10 +36,10 @@ function App() {
             return (
               <line
                 key={index}
-                x1={`${startPos.left}%`}
-                y1={`${startPos.top}%`}
-                x2={`${endPos.left}%`}
-                y2={`${endPos.top}%`}
+                x1={`${startPos.left + 0.5}%`} // Adjusted
+                y1={`${startPos.top + 0.5}%`} // Adjusted
+                x2={`${endPos.left + 0.5}%`} // Adjusted
+                y2={`${endPos.top + 0.5}%`} // Adjusted
                 stroke="black"
               />
             );
