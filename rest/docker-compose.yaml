@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  agents_unleashed:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      redis:
+        condition: service_healthy
+      # postgresql:
+      #   condition: service_healthy
+    environment:
+      - REDIS_CONNECTION_STRING=redis://redis:6379
+      # - DB_CONNECTION_STRING=postgresql+psycopg2://your_username:your_password@postgresql
+      - DATABASE_NAME=agents_unleashed
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  # postgresql:
+  #   image: postgres:latest
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     - POSTGRES_USER=your_username
+  #     - POSTGRES_PASSWORD=your_password
+  #     - POSTGRES_DB=agents_unleashed
+  #   volumes:
+  #     - db:/var/lib/postgresql/data
+  #   networks:
+  #     - agents-unleashed
+
+networks:
+  agents-unleashed:
+    external: true
+
+volumes:
+  db:
+    driver: local
