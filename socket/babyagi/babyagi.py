@@ -330,7 +330,6 @@ def limit_tokens_from_string(string: str, model: str, limit: int) -> str:
 
     return encoding.decode(encoded[:limit])
 
-
 def openai_call(
     prompt: str,
     model: str = LLM_MODEL,
@@ -458,13 +457,13 @@ Unless your list is empty, do not include any headers before your numbered list 
     return out
 
 
-def prioritization_agent():
+def prioritization_agent(objective):
     task_names = tasks_storage.get_task_names()
     bullet_string = '\n'
 
     prompt = f"""
 You are tasked with prioritizing the following tasks: {bullet_string + bullet_string.join(task_names)}
-Consider the ultimate objective of your team: {OBJECTIVE}.
+Consider the ultimate objective of your team: {objective}.
 Tasks should be sorted from highest to lowest priority, where higher-priority tasks are those that act as pre-requisites or are more essential for meeting the objective.
 Do not remove any tasks. Return the ranked tasks as a numbered list in the format:
 
@@ -515,6 +514,7 @@ def execution_agent(objective: str, task: str) -> str:
     if context:
         prompt += 'Take into account these previously completed tasks:' + '\n'.join(context)
     prompt += f'\nYour task: {task}\nResponse:'
+
     return openai_call(prompt, max_tokens=2000)
 
 
@@ -547,11 +547,10 @@ if not JOIN_EXISTING_OBJECTIVE:
 
 
 def babyagi_function(socket, objective):
-    if socket is None:
-        return 
-    
     loop = True
     completed_task = []
+    print(socket)
+
     while loop:
         # As long as there are tasks in the storage...
         if not tasks_storage.is_empty():
@@ -565,15 +564,17 @@ def babyagi_function(socket, objective):
             task = tasks_storage.popleft()
             print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
             print(str(task["task_name"]))
-            socket.emit('message', {
-                "current_task": str(task["task_name"]),
-                "state": "in_progress",
-                "tasks_done": completed_task,
-                "tasks_todo": task_list
-            })
+            socket.emit('message', 'hi')
+            # socket.emit('message', {
+            #     "current_task": str(task["task_name"]),
+            #     "state": "in_progress",
+            #     "tasks_done": completed_task,
+            #     "tasks_todo": task_list
+            # })
+            print("Submit")
 
             # Send to execution function to complete the task based on the context
-            result = execution_agent(OBJECTIVE, str(task["task_name"]))
+            result = execution_agent(objective, str(task["task_name"]))
             print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" + "\033[0m\033[0m")
             print(result)
 
@@ -617,7 +618,7 @@ def babyagi_function(socket, objective):
                 tasks_storage.append(new_task)
 
             if not JOIN_EXISTING_OBJECTIVE:
-                prioritized_tasks = prioritization_agent()
+                prioritized_tasks = prioritization_agent(objective)
                 if prioritized_tasks:
                     tasks_storage.replace(prioritized_tasks)
 

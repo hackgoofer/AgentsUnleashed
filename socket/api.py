@@ -1,41 +1,27 @@
 from flask import Flask, request
-from flask_socketio import SocketIO, emit
-import asyncio
-import eventlet
+from flask_socketio import SocketIO
 from babyagi import babyagi
 
-eventlet.monkey_patch()
-
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*") 
+socketio = SocketIO(app, cors_allowed_origins="*") 
 
 # # Define your tasks
-async def babyagi_api():
+def babyagi_api(objective):
     print('Task 1 started')
-    babyagi.babyagi_function(socketio)
-    # babyagi_function(socketio)
+    socketio.emit('message', 'from task1 starting...')
+    socketio.emit('message', 'from task1 starting 1...')
+    socketio.emit('message', 'from task1 starting 2...')
+
+    # babyagi.babyagi_function(socketio, objective)
     print('Task 1 finished')
 
-async def task2():
-    print('Task 2 started')
-    await asyncio.sleep(4)  # simulate task taking time
-    socketio.emit('message', 'from task2')
-    print('Task 2 finished')
-
-# Function to run both tasks concurrently
-async def run_concurrently():
-    # Schedule both the tasks to run
-    task1_handle = asyncio.create_task(babyagi_api())
-    # task2_handle = asyncio.create_task(task2())
-
-    # Await on the tasks to make sure they complete
-    await task1_handle
-    # await task2_handle
-
-@app.route('/trigger', methods=['GET'])
-async def trigger():
+@app.route('/trigger', methods=['POST'])
+def trigger():
     # emit 'message' event with data 'Hello' to all connected clients
-    await run_concurrently()
+    data = request.get_json()  # get the JSON data from the request
+    objective = data.get('objective')  # get 'objective' parameter from the JSON data
+    
+    babyagi_api(objective)
     return {"status": "Message sent"}
 
 if __name__ == '__main__':
