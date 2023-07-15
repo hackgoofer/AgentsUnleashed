@@ -1,0 +1,19 @@
+pytest
+pylint
+falcon
+uvicorn[standard] # ASGI
+gevent # WSGI
+httpx
+gunicorn
+minio
+redis
+redis
+sqlalchemy
+sqlalchemy-utils
+psycopg2-binary
+pyjwt
+pylint
+python-dateutil
+validators
+bcrypt
+sendgrid
