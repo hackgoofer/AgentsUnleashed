@@ -8,6 +8,14 @@ function App() {
   const [currentTask, setCurrentTask] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
 
+  // Generate random positions for nodes
+  const [nodePositions, setNodePositions] = useState(
+    tasks.map(() => ({
+      left: Math.random() * 80 + 10, // Random value from 10% to 90%
+      top: Math.random() * 80 + 10, // Random value from 10% to 90%
+    }))
+  );
+
   const handleButtonClick = () => {
     setIsMoving(true);
     setCurrentTask((oldTask) =>
@@ -22,20 +30,36 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="Timeline">
-          {tasks.map((task, index) => (
-            <div key={task} className="TimelineSegment">
-              <div className="TimelineNode" />
-              {index < tasks.length - 1 && <div className="TimelineLine" />}
-            </div>
-          ))}
-        </div>
+        <svg className="SvgBack">
+          {nodePositions.slice(0, -1).map((startPos, index) => {
+            const endPos = nodePositions[index + 1];
+            return (
+              <line
+                key={index}
+                x1={`${startPos.left}%`}
+                y1={`${startPos.top}%`}
+                x2={`${endPos.left}%`}
+                y2={`${endPos.top}%`}
+                stroke="black"
+              />
+            );
+          })}
+        </svg>
+
+        {nodePositions.map((pos, index) => (
+          <div
+            key={index}
+            className="TimelineNode"
+            style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
+          />
+        ))}
         <img
           src={isMoving ? corgiRun : corgiSit}
           className="Corgi"
           style={{
-            transition: "left 2s",
-            left: `${(currentTask / tasks.length) * 100}%`,
+            transition: "left 2s, top 2s",
+            left: `${nodePositions[currentTask].left}%`,
+            top: `${nodePositions[currentTask].top}%`,
           }}
           onTransitionEnd={handleTransitionEnd}
           alt="corgi"
