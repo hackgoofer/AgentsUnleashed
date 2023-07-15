@@ -10,8 +10,8 @@ function App() {
 
   // Generate random positions for nodes
   const [nodePositions, setNodePositions] = useState(
-    tasks.map(() => ({
-      left: Math.random() * 80 + 10, // Random value from 10% to 90%
+    tasks.map((_, index) => ({
+      left: (index / tasks.length + Math.random() * 0.1) * 80 + 10, // Calculate segment and add some randomness
       top: Math.random() * 80 + 10, // Random value from 10% to 90%
     }))
   );
@@ -36,10 +36,10 @@ function App() {
             return (
               <line
                 key={index}
-                x1={`${startPos.left + 0.5}%`} // Adjusted
-                y1={`${startPos.top + 0.5}%`} // Adjusted
-                x2={`${endPos.left + 0.5}%`} // Adjusted
-                y2={`${endPos.top + 0.5}%`} // Adjusted
+                x1={`${startPos.left + 0.5}%`}
+                y1={`${startPos.top + 2}%`}
+                x2={`${endPos.left + 0}%`}
+                y2={`${endPos.top + 2}%`}
                 stroke="black"
               />
             );
@@ -50,9 +50,10 @@ function App() {
           <div
             key={index}
             className="TimelineNode"
-            style={{ left: `${pos.left}%`, top: `${pos.top - 2}%` }}
+            style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
           />
         ))}
+
         <img
           src={isMoving ? corgiRun : corgiSit}
           className="Corgi"
@@ -64,6 +65,20 @@ function App() {
           onTransitionEnd={handleTransitionEnd}
           alt="corgi"
         />
+
+        {/* Add this to display the chat bubble when the corgi is not moving */}
+        {!isMoving && currentTask < tasks.length && (
+          <div
+            className="ChatBubble"
+            style={{
+              left: `calc(${nodePositions[currentTask].left}% - 50px)`, // Subtract half of the chat bubble's width
+              top: `${nodePositions[currentTask].top - 35}%`, // Increase the subtraction to move it upwards
+            }}
+          >
+            {tasks[currentTask]}
+          </div>
+        )}
+
         <button onClick={handleButtonClick}>Move Corgi</button>
       </header>
     </div>
