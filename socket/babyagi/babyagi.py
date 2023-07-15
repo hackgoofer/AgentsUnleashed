@@ -42,7 +42,7 @@ COOPERATIVE_MODE = "none"
 JOIN_EXISTING_OBJECTIVE = False
 
 # Goal configuration
-OBJECTIVE = os.getenv("OBJECTIVE", "")
+# OBJECTIVE = os.getenv("OBJECTIVE", "")
 INITIAL_TASK = os.getenv("INITIAL_TASK", os.getenv("FIRST_TASK", ""))
 
 # Model configuration
@@ -70,7 +70,7 @@ if ENABLE_COMMAND_LINE_ARGS:
     if can_import("extensions.argparseext"):
         from extensions.argparseext import parse_arguments
 
-        OBJECTIVE, INITIAL_TASK, LLM_MODEL, DOTENV_EXTENSIONS, INSTANCE_NAME, COOPERATIVE_MODE, JOIN_EXISTING_OBJECTIVE = parse_arguments()
+        _, INITIAL_TASK, LLM_MODEL, DOTENV_EXTENSIONS, INSTANCE_NAME, COOPERATIVE_MODE, JOIN_EXISTING_OBJECTIVE = parse_arguments()
 
 # Human mode extension
 # Gives human input to babyagi
@@ -100,7 +100,7 @@ print(f"LLM   : {LLM_MODEL}")
 
 
 # Check if we know what we are doing
-assert OBJECTIVE, "\033[91m\033[1m" + "OBJECTIVE environment variable is missing from .env" + "\033[0m\033[0m"
+# assert OBJECTIVE, "\033[91m\033[1m" + "OBJECTIVE environment variable is missing from .env" + "\033[0m\033[0m"
 assert INITIAL_TASK, "\033[91m\033[1m" + "INITIAL_TASK environment variable is missing from .env" + "\033[0m\033[0m"
 
 LLAMA_MODEL_PATH = os.getenv("LLAMA_MODEL_PATH", "models/llama-13B/ggml-model.bin")
@@ -160,8 +160,8 @@ if LLM_MODEL.startswith("human"):
         + "\033[0m\033[0m"
     )
 
-print("\033[94m\033[1m" + "\n*****OBJECTIVE*****\n" + "\033[0m\033[0m")
-print(f"{OBJECTIVE}")
+# print("\033[94m\033[1m" + "\n*****OBJECTIVE*****\n" + "\033[0m\033[0m")
+# print(f"{OBJECTIVE}")
 
 if not JOIN_EXISTING_OBJECTIVE:
     print("\033[93m\033[1m" + "\nInitial task:" + "\033[0m\033[0m" + f" {INITIAL_TASK}")
@@ -330,7 +330,6 @@ def limit_tokens_from_string(string: str, model: str, limit: int) -> str:
 
     return encoding.decode(encoded[:limit])
 
-
 def openai_call(
     prompt: str,
     model: str = LLM_MODEL,
@@ -458,13 +457,13 @@ Unless your list is empty, do not include any headers before your numbered list 
     return out
 
 
-def prioritization_agent():
+def prioritization_agent(objective):
     task_names = tasks_storage.get_task_names()
     bullet_string = '\n'
 
     prompt = f"""
 You are tasked with prioritizing the following tasks: {bullet_string + bullet_string.join(task_names)}
-Consider the ultimate objective of your team: {OBJECTIVE}.
+Consider the ultimate objective of your team: {objective}.
 Tasks should be sorted from highest to lowest priority, where higher-priority tasks are those that act as pre-requisites or are more essential for meeting the objective.
 Do not remove any tasks. Return the ranked tasks as a numbered list in the format:
 
@@ -515,6 +514,7 @@ def execution_agent(objective: str, task: str) -> str:
     if context:
         prompt += 'Take into account these previously completed tasks:' + '\n'.join(context)
     prompt += f'\nYour task: {task}\nResponse:'
+
     return openai_call(prompt, max_tokens=2000)
 
 
@@ -546,25 +546,39 @@ if not JOIN_EXISTING_OBJECTIVE:
     tasks_storage.append(initial_task)
 
 
-def main():
+def babyagi_function(socket, objective):
     loop = True
+    completed_task = []
+    print(socket)
+
     while loop:
         # As long as there are tasks in the storage...
         if not tasks_storage.is_empty():
             # Print the task list
             print("\033[95m\033[1m" + "\n*****TASK LIST*****\n" + "\033[0m\033[0m")
-            for t in tasks_storage.get_task_names():
+            task_list = tasks_storage.get_task_names()
+            for t in task_list:
                 print(" • " + str(t))
 
             # Step 1: Pull the first incomplete task
             task = tasks_storage.popleft()
             print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
             print(str(task["task_name"]))
+            socket.emit('message', 'hi')
+            # socket.emit('message', {
+            #     "current_task": str(task["task_name"]),
+            #     "state": "in_progress",
+            #     "tasks_done": completed_task,
+            #     "tasks_todo": task_list
+            # })
+            print("Submit")
 
             # Send to execution function to complete the task based on the context
-            result = execution_agent(OBJECTIVE, str(task["task_name"]))
+            result = execution_agent(objective, str(task["task_name"]))
             print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" + "\033[0m\033[0m")
             print(result)
+
+            # Progres+1 
 
             # Step 2: Enrich result and store in the results storage
             # This is where you should enrich the result if needed
@@ -578,16 +592,25 @@ def main():
             result_id = f"result_{task['task_id']}"
 
             results_storage.add(task, result, result_id)
+            completed_task.append(task["task_name"])
+            socket.emit('message', {
+                "current_task": str(task["task_name"]),
+                "state": "done",
+                "result": result,
+                "tasks_done": completed_task,
+                "tasks_todo": task_list
+            })
 
             # Step 3: Create new tasks and re-prioritize task list
             # only the main instance in cooperative mode does that
             new_tasks = task_creation_agent(
-                OBJECTIVE,
+                objective,
                 enriched_result,
                 task["task_name"],
                 tasks_storage.get_task_names(),
             )
 
+            # Update the current Task list, and our current progress
             print('Adding new tasks to task_storage')
             for new_task in new_tasks:
                 new_task.update({"task_id": tasks_storage.next_task_id()})
@@ -595,16 +618,18 @@ def main():
                 tasks_storage.append(new_task)
 
             if not JOIN_EXISTING_OBJECTIVE:
-                prioritized_tasks = prioritization_agent()
+                prioritized_tasks = prioritization_agent(objective)
                 if prioritized_tasks:
                     tasks_storage.replace(prioritized_tasks)
 
+            new_task_list = tasks_storage.get_task_names()
+            socket.emit('message', {
+                "state": "new_tasks_added_reprioritized",
+                "tasks_done": completed_task,
+                "tasks_todo": new_task_list
+            })
             # Sleep a bit before checking the task list again
             time.sleep(5)
         else:
             print('Done.')
             loop = False
-
-
-if __name__ == "__main__":
-    main()
