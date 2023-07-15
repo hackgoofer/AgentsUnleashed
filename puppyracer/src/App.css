@@ -1,6 +1,21 @@
+body {
+  background-color: #fbfdf8;
+}
+
+.App {
+  text-align: center;
+}
+
 .App-header {
   position: relative;
   height: 400px;
+  background-color: #fbfdf8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 .Corgi {
@@ -8,4 +23,12 @@
   bottom: 0;
   width: 100px; /* You can adjust this as needed */
   height: auto; /* Maintains aspect ratio */
+}
+
+.Timeline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 3px dashed black; /* Adjust as necessary */
 }
