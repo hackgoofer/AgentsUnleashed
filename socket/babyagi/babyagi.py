@@ -564,15 +564,14 @@ def babyagi_function(socket_name, objective):
             task = tasks_storage.popleft()
             print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
             print(str(task["task_name"]))
-            socket_name.emit('message', 'hi')
+            socket_name.emit('message', {
+                "current_task": str(task["task_name"]),
+                "state": "in_progress",
+                "tasks_done": completed_task,
+                "tasks_todo": task_list
+            })
             socket_name.sleep(0)  # Flush the emit call
 
-            # socket.emit('message', {
-            #     "current_task": str(task["task_name"]),
-            #     "state": "in_progress",
-            #     "tasks_done": completed_task,
-            #     "tasks_todo": task_list
-            # })
             print("Submit")
 
             # Send to execution function to complete the task based on the context
@@ -631,6 +630,8 @@ def babyagi_function(socket_name, objective):
                 "tasks_done": completed_task,
                 "tasks_todo": new_task_list
             })
+            socket_name.sleep(0)  # Flush the emit call
+            
             # Sleep a bit before checking the task list again
             time.sleep(5)
         else:
