@@ -34,7 +34,7 @@ Always remember, you're interacting with a fellow 'corgi', so keep your feedback
             {"role": "user", "content": f"Speaking: {message}"},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.messages
+            model="gpt-4", messages=self.messages
         )
         reply = chat.choices[0].message.content
         self.socket_name.emit(self.metaagent_name, {
@@ -49,7 +49,7 @@ Always remember, you're interacting with a fellow 'corgi', so keep your feedback
             {"role": "user", "content": f"Doing: {message}"},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.messages
+            model="gpt-4", messages=self.messages
         )
         reply = chat.choices[0].message.content
         self.socket_name.emit(self.metaagent_name, {
@@ -64,7 +64,7 @@ Always remember, you're interacting with a fellow 'corgi', so keep your feedback
             {"role": "user", "content": f"Plan: {message}"},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.messages
+            model="gpt-4", messages=self.messages
         )
         reply = chat.choices[0].message.content
         self.socket_name.emit(self.metaagent_name, {

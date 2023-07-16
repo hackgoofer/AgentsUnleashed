@@ -7,24 +7,71 @@ import corgiBark from "./corgi_bark.gif";
 
 const ENDPOINT = "http://127.0.0.1:8080"; // Replace with your server's address
 
-function FixedTextbox({ data }) {
+function FixedTextbox({ data, plan }) {
   return (
     <div
       style={{
+        justifyContent: "space-around",
         position: "fixed",
         bottom: 0,
-        height: "200px",
+        height: "300px",
         width: "100%",
         backgroundColor: "#f0f0f0",
         padding: "10px",
         borderTop: "1px solid #000",
+        fontFamily: "'Comic Sans MS', cursive, sans-serif",
       }}
     >
-      {Object.entries(data).map(([key, value], index) => (
-        <p key={index}>
-          <strong>{key}:</strong> {value}
-        </p>
-      ))}
+      <h1>Prompt: "Find me a Doggy Daycare"</h1>
+      <div
+        style={{
+          display: "flex",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            margin: "10px",
+            backgroundColor: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "10px",
+            boxShadow: "2px 2px 5px rgba(0,0,0,0.3)",
+            textAlign: "left",
+            overflow: "scroll",
+          }}
+        >
+          <h1>Meta Agent</h1>
+          <p>{data}</p>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            margin: "10px",
+            backgroundColor: "#f5f5f5",
+            padding: "10px",
+            borderRadius: "10px",
+            boxShadow: "2px 2px 5px rgba(0,0,0,0.3)",
+            textAlign: "left",
+            overflow: "scroll",
+          }}
+        >
+          <h1>Plan</h1>
+          <ul>
+            {[...plan].reverse().map((item, index, { length }) => (
+              <li
+                key={index}
+                style={
+                  index === 0
+                    ? { fontWeight: "bold", backgroundColor: "#ddd" }
+                    : {}
+                }
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
@@ -34,6 +81,7 @@ function App() {
   const [isRepating, setIsRepeating] = useState(false);
   const [currentTask, setCurrentTask] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
+  const [meta, setMeta] = useState(" ");
   const socketRef = useRef();
   // Generate random positions for nodes
   const [nodePositions, setNodePositions] = useState(
@@ -69,6 +117,13 @@ function App() {
         ]);
       }
     });
+
+    socketRef.current.on("babyagi_metagent", (message) => {
+      setMeta(message["message"]);
+      console.log("!!!metaagent!!!");
+      console.log(message);
+    });
+
     return () => {
       // Disconnect from the socket when the component unmounts
       socketRef.current.disconnect();
@@ -141,7 +196,7 @@ function App() {
         )}
         {/* button at very bottom of page */}
       </header>
-      <FixedTextbox data={tasks} />
+      <FixedTextbox data={meta} plan={tasks} />
     </div>
   );
 }

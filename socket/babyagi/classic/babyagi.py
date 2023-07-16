@@ -11,7 +11,7 @@ PINECONE_ENVIRONMENT = "us-east1-gcp" #Pinecone Environment (eg. "us-east1-gcp")
 
 #Set Variables
 YOUR_TABLE_NAME = "test-table"
-OBJECTIVE = "Solve world hunger."
+OBJECTIVE = "Find me a great doggy daycare."
 YOUR_FIRST_TASK = "Develop a task list."
 
 #Print OBJECTIVE
