@@ -546,7 +546,7 @@ if not JOIN_EXISTING_OBJECTIVE:
     tasks_storage.append(initial_task)
 
 
-def babyagi_function(socket_name, objective):
+def babyagi_function(socket_name, objective, metagent):
     loop = True
     completed_task = []
     print(socket_name)
@@ -564,6 +564,8 @@ def babyagi_function(socket_name, objective):
             task = tasks_storage.popleft()
             print("\033[92m\033[1m" + "\n*****NEXT TASK*****\n" + "\033[0m\033[0m")
             print(str(task["task_name"]))
+
+            
             socket_name.emit('message', {
                 "current_task": str(task["task_name"]),
                 "state": "in_progress",
@@ -572,12 +574,18 @@ def babyagi_function(socket_name, objective):
             })
             socket_name.sleep(0)  # Flush the emit call
 
+            # Metagent 
+            metagent.corgi_doing(str(task["task_name"]))
+
             print("Submit")
 
             # Send to execution function to complete the task based on the context
             result = execution_agent(objective, str(task["task_name"]))
             print("\033[93m\033[1m" + "\n*****TASK RESULT*****\n" + "\033[0m\033[0m")
             print(result)
+
+            # Metagent
+            # metagent.corgi_plan(str(result))
 
             # Progres+1 
 
@@ -602,6 +610,8 @@ def babyagi_function(socket_name, objective):
                 "tasks_todo": task_list
             })
             socket_name.sleep(0)  # Flush the emit call
+            # Metagent 
+            metagent.corgi_says(str(result))
 
             # Step 3: Create new tasks and re-prioritize task list
             # only the main instance in cooperative mode does that

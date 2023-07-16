@@ -10,6 +10,9 @@
     socket.on('message', (message) => {
       console.log('Message from server: ', message);
     });
+    socket.on('babyagi_metagent', (message) => {
+      console.log('Message from babyagi_metagent: ', message);
+    });
   </script>
 </head>
 <body>
