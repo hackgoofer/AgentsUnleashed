@@ -3,11 +3,35 @@ import socketIOClient from "socket.io-client";
 import "./App.css";
 import corgiRun from "./corgi_run.gif";
 import corgiSit from "./corgi_sit.gif";
+import corgiBark from "./corgi_bark.gif";
 
 const ENDPOINT = "http://127.0.0.1:8080"; // Replace with your server's address
 
+function FixedTextbox({ data }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        height: "200px",
+        width: "100%",
+        backgroundColor: "#f0f0f0",
+        padding: "10px",
+        borderTop: "1px solid #000",
+      }}
+    >
+      {Object.entries(data).map(([key, value], index) => (
+        <p key={index}>
+          <strong>{key}:</strong> {value}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function App() {
   const [tasks, setTasks] = useState(["Starting my journey!"]);
+  const [isRepating, setIsRepeating] = useState(false);
   const [currentTask, setCurrentTask] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
   const socketRef = useRef();
@@ -26,16 +50,24 @@ function App() {
     console.log("cnnected", socketRef.current);
     // Listen for new tasks
     socketRef.current.on("message", (newTask) => {
+      setIsRepeating(false);
       console.log("hello?");
+      console.log(tasks);
       console.log(newTask);
-      setTasks((oldTasks) => [...oldTasks, newTask["current_task"]]);
-      setNodePositions((oldPositions) => [
-        ...oldPositions,
-        {
-          left: tasks.length * 10, // Evenly spaced
-          top: 100, // Constant vertical position
-        },
-      ]);
+      if (newTask["current_task"] === tasks.slice(-1)["current_task"]) {
+        setIsRepeating(true);
+      }
+
+      if (!!newTask["current_task"]) {
+        setTasks((oldTasks) => [...oldTasks, newTask["current_task"]]);
+        setNodePositions((oldPositions) => [
+          ...oldPositions,
+          {
+            left: tasks.length * 10, // Evenly spaced
+            top: 100, // Constant vertical position
+          },
+        ]);
+      }
     });
     return () => {
       // Disconnect from the socket when the component unmounts
@@ -84,7 +116,7 @@ function App() {
         ))}
 
         <img
-          src={isMoving ? corgiRun : corgiSit}
+          src={isMoving ? corgiRun : isRepating ? corgiBark : corgiSit}
           className="Corgi"
           style={{
             transition: "left 2s, top 2s",
@@ -109,6 +141,7 @@ function App() {
         )}
         {/* button at very bottom of page */}
       </header>
+      <FixedTextbox data={tasks} />
     </div>
   );
 }
