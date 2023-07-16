@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import socketIOClient from "socket.io-client";
 import "./App.css";
 import corgiRun from "./corgi_run.gif";
 import corgiSit from "./corgi_sit.gif";
 
+const ENDPOINT = "http://127.0.0.1:8080"; // Replace with your server's address
+
 function App() {
-  const tasks = ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5"]; // Replace with actual tasks
+  const [tasks, setTasks] = useState(["Starting my journey!"]);
   const [currentTask, setCurrentTask] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
-
+  const socketRef = useRef();
   // Generate random positions for nodes
   const [nodePositions, setNodePositions] = useState(
     tasks.map((_, index) => ({
@@ -15,6 +18,32 @@ function App() {
       top: Math.random() * 80 + 10, // Random value from 10% to 90%
     }))
   );
+
+  useEffect(() => {
+    // Connect to the socket
+    console.log("tryign to connect");
+    socketRef.current = socketIOClient(ENDPOINT);
+    console.log("cnnected", socketRef.current);
+    // Listen for new tasks
+    socketRef.current.on("message", (newTask) => {
+      console.log("hello?");
+      console.log(newTask);
+      setTasks((oldTasks) => [...oldTasks, newTask["current_task"]]);
+      setNodePositions((oldPositions) => [
+        ...oldPositions,
+        {
+          left:
+            (oldPositions.length / tasks.length + Math.random() * 0.1) * 80 +
+            10,
+          top: Math.random() * 80 + 10,
+        },
+      ]);
+    });
+    return () => {
+      // Disconnect from the socket when the component unmounts
+      socketRef.current.disconnect();
+    };
+  }, [tasks.length]);
 
   const handleButtonClick = () => {
     setIsMoving(true);
