@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_socketio import SocketIO
 from babyagi import babyagi
-from .metagent import MetaAgent
+from metaagent import MetaAgent
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -13,7 +13,7 @@ def trigger():
     objective = data.get("objective")  # get 'objective' parameter from the JSON data
     
     # Creating metagents
-    babyagi_metagent = MetaAgent()
+    babyagi_metagent = MetaAgent("babyagi_metagent", socket_name=socketio)
     print("Starting Baby AGI")
     babyagi.babyagi_function(
         socket_name=socketio, objective=objective, metaent=babyagi_metagent
