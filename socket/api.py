@@ -16,7 +16,7 @@ def trigger():
     babyagi_metagent = MetaAgent("babyagi_metagent", socket_name=socketio)
     print("Starting Baby AGI")
     babyagi.babyagi_function(
-        socket_name=socketio, objective=objective, metaent=babyagi_metagent
+        socket_name=socketio, objective=objective, metagent=babyagi_metagent
     )
     return {"status": "Message sent"}
 
