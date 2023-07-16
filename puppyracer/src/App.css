@@ -42,8 +42,8 @@ body {
   position: absolute;
   bottom: 120px; /* Adjust as needed */
   left: 0;
-  width: 120px; /* Adjust as needed */
-  height: 60px; /* Adjust as needed */
+  width: 200px; /* Adjust as needed */
+  height: 150px; /* Adjust as needed */
   background-color: white;
   border: 2px solid black;
   border-radius: 10px;

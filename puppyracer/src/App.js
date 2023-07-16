@@ -14,8 +14,8 @@ function App() {
   // Generate random positions for nodes
   const [nodePositions, setNodePositions] = useState(
     tasks.map((_, index) => ({
-      left: (index / tasks.length + Math.random() * 0.1) * 80 + 10, // Calculate segment and add some randomness
-      top: Math.random() * 80 + 10, // Random value from 10% to 90%
+      left: 10 + index * 80, // Calculate segment and add some randomness
+      top: 100, // Random value from 10% to 90%
     }))
   );
 
@@ -32,10 +32,8 @@ function App() {
       setNodePositions((oldPositions) => [
         ...oldPositions,
         {
-          left:
-            (oldPositions.length / tasks.length + Math.random() * 0.1) * 80 +
-            10,
-          top: Math.random() * 80 + 10,
+          left: tasks.length * 10, // Evenly spaced
+          top: 100, // Constant vertical position
         },
       ]);
     });
@@ -58,6 +56,8 @@ function App() {
 
   return (
     <div className="App">
+      <button onClick={handleButtonClick}>Move Corgi</button>
+
       <header className="App-header">
         <svg className="SvgBack">
           {nodePositions.slice(0, -1).map((startPos, index) => {
@@ -100,15 +100,14 @@ function App() {
           <div
             className="ChatBubble"
             style={{
-              left: `calc(${nodePositions[currentTask].left - 5}% + 15px)`, // Subtract half of the chat bubble's width
-              top: `${nodePositions[currentTask].top - 40}%`, // Increase the subtraction to move it upwards
+              left: `calc(${nodePositions[currentTask].left - 5}% )`, // Subtract half of the chat bubble's width
+              top: `35%`, // Increase the subtraction to move it upwards
             }}
           >
             {tasks[currentTask]}
           </div>
         )}
-
-        <button onClick={handleButtonClick}>Move Corgi</button>
+        {/* button at very bottom of page */}
       </header>
     </div>
   );
