@@ -31,7 +31,7 @@ Always remember, you're interacting with a fellow 'corgi', so keep your feedback
 
     def corgi_says(self, message: str):
         self.messages.append(
-            {"role": "user", "content": f"SPEAKS: {message}"},
+            {"role": "user", "content": f"Speaking: {message}"},
         )
         chat = openai.ChatCompletion.create(
             model="gpt-3.5-turbo", messages=self.messages
