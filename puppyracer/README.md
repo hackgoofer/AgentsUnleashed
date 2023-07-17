@@ -1,3 +1,5 @@
+curl -X POST -H "Content-Type: application/json" -d '{"objective":"find me a great doggy daycare"}' http://localhost:8080/trigger
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
